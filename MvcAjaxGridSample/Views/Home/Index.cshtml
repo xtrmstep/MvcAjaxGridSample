@@ -1,0 +1,48 @@
+﻿@model MvcAjaxGridSample.Models.GridViewModel<MvcAjaxGridSample.Types.DataModel.Book>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th class="col-sm-2"></th> 
+            <th>Title</th> 
+            <th>Year</th> 
+        </tr>
+    </thead>
+    <tr class="info">
+        <td>
+            <button type="button" class="btn btn-xs btn-default">Apply</button>
+            <button type="button" class="btn btn-xs btn-default">Clear</button>
+        </td>
+        <td>@Html.EditorFor(m => m.Filter.Title)</td>
+        <td>@Html.EditorFor(m => m.Filter.IssueYear)</td>
+    </tr>
+    <tbody>
+        @foreach (var book in Model.Data)
+        {
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-xs btn-default">Edit</button>
+                    <button type="button" class="btn btn-xs btn-default">Delete</button>
+                </td>
+                <td>@book.Title</td>
+                <td>@book.IssueYear</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td colspan="2">
+                <div>
+                    <button type="button" class="btn btn-xs btn-default">&lt;</button>
+                    @Html.ValueFor(m => m.Paging.PageIndex)
+                    /
+                    @Html.ValueFor(m => m.Paging.TotalPages)
+                    <button type="button" class="btn btn-xs btn-default">&gt;</button>
+                    <button type="button" class="btn btn-xs btn-default">Go</button>
+                    @Html.EditorFor(m => m.Paging.GoToIndex)
+                </div>
+            </td>
+        </tr>
+    </tfoot>
+</table>
