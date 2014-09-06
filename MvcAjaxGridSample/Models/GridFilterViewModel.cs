@@ -11,5 +11,6 @@
         }
         public string Title { get; set; }
         public int? IssueYear { get; set; }
+        public GridFilterViewModel Current { get; set; }
     }
 }

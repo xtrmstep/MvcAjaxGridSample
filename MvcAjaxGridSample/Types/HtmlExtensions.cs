@@ -28,7 +28,7 @@ namespace MvcAjaxGridSample.Types
             var inp = new TagBuilder("input");
             inp.Attributes["type"] = "hidden";
             inp.Attributes["name"] = html.NameFor(nameProperty).ToString();
-            inp.Attributes["value"] = value.ToString();
+            inp.Attributes["value"] = Convert.ToString(value);
             return new MvcHtmlString(inp.ToString());
         }
 
@@ -37,7 +37,7 @@ namespace MvcAjaxGridSample.Types
             var inp = new TagBuilder("input");
             inp.Attributes["type"] = "text";
             inp.Attributes["name"] = html.NameFor(nameProperty).ToString();
-            inp.Attributes["value"] = value.ToString();
+            inp.Attributes["value"] = Convert.ToString(value);
             if (htmlAttributes != null) inp.MergeAttributes(htmlAttributes, true);
             return new MvcHtmlString(inp.ToString());
         }

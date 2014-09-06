@@ -1,8 +1,11 @@
 ﻿@using MvcAjaxGridSample.Models
 @using MvcAjaxGridSample.Types
-@model MvcAjaxGridSample.Models.GridViewModel<MvcAjaxGridSample.Types.DataModel.Book>
+@model GridViewModel<MvcAjaxGridSample.Types.DataModel.Book>
 
-@Html.AntiForgeryToken()   
+@Html.AntiForgeryToken()
+@Html.SimpleHidden(m => m.Filter.Current.Title, Model.Filter.Current.Title)
+@Html.SimpleHidden(m => m.Filter.Current.IssueYear, Model.Filter.Current.IssueYear)
+
 <table class="table table-hover">
     <thead>
         <tr>
@@ -16,8 +19,8 @@
             @Html.Command("Apply", m => m.Command, GridCommand.Filter)
             @Html.Command("Clear", m => m.Command, GridCommand.FilterClear)
         </td>
-        <td>@Html.EditorFor(m => m.Filter.Title)</td>
-        <td>@Html.EditorFor(m => m.Filter.IssueYear)</td>
+        <td>@Html.SimpleEdit(m => m.Filter.Title, Model.Filter.Title)</td>
+        <td>@Html.SimpleEdit(m => m.Filter.IssueYear, Model.Filter.IssueYear)</td>
     </tr>
     <tbody>
         @foreach (var book in Model.Data)
@@ -41,12 +44,13 @@
         <div>
             @Html.SimpleHidden(m => m.Paging.TotalItems, Model.Paging.TotalItems)
             @Html.SimpleHidden(m => m.Paging.TotalPages, Model.Paging.TotalPages)
+            @Html.SimpleHidden(m => m.Paging.PageSize, Model.Paging.PageSize)
             
 
             @Html.Command("<", m => m.Command, GridCommand.PageLeft)
             @Html.SimpleEdit(m => m.Paging.PageIndex, Model.Paging.PageIndex, new Dictionary<string, object>{{"style","width:30px"}})
             /
-            <span>@Html.ValueFor(m => m.Paging.TotalPages)</span>
+            <span>@Model.Paging.TotalPages</span>
             @Html.Command(">", m => m.Command, GridCommand.PageRight)
             @Html.Command("Go", m => m.Command, GridCommand.GoTo)
         </div>

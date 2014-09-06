@@ -1,6 +1,4 @@
-﻿using MvcAjaxGridSample.Types;
-
-namespace MvcAjaxGridSample.Models
+﻿namespace MvcAjaxGridSample.Models
 {
     /// <summary>
     ///     Provides a generic interface to grid data
@@ -11,7 +9,7 @@ namespace MvcAjaxGridSample.Models
         public GridViewModel()
         {
             Data = new T[0];
-            Filter = new GridFilterViewModel();
+            Filter = new GridFilterViewModel {Current = new GridFilterViewModel()};
             Paging = new GridPagingViewModel();
         }
 
