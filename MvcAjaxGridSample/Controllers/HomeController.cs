@@ -60,17 +60,13 @@ namespace MvcAjaxGridSample.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CommandDispatcher(GridViewModel<Book> model, string gridOptions)
+        public ActionResult CommandDispatcher(GridViewModel<Book> model, string gridOptions, GridViewModel<Book>.GridOptions overrideOptions = null)
         {
-            if (model.EditId.HasValue)
-            {
-                
-            }
             if (model.DeletedId.HasValue)
                 _bookRepository.Delete(model.DeletedId.Value);
 
 
-            var options = (GridViewModel<Book>.GridOptions)new MvcSerializer().Deserialize(gridOptions, SerializationMode.Signed);
+            var options = overrideOptions ?? (GridViewModel<Book>.GridOptions)new MvcSerializer().Deserialize(gridOptions, SerializationMode.Signed);
             options.Command = model.Options.Command;
             var books = _bookRepository.Get();
 
@@ -123,6 +119,37 @@ namespace MvcAjaxGridSample.Controllers
             model.Data = data.ToArray();
             model.Options = options;
             return PartialView("_GridViewBooks", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id)
+        {
+            var book = _bookRepository.Get(id);
+            return PartialView("_EditBook", book);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Save(Book book)
+        {
+            _bookRepository.Save(book);
+
+            var gridOptions = new GridViewModel<Book>.GridOptions
+            {
+                Filter =
+                {
+                    Title = book.Title,
+                    IssueYear = book.IssueYear
+                },
+                Paging =
+                {
+                    PageIndex = 1,
+                    PageSize = Configuration.Grid.PageSize
+                }
+            };
+
+            return CommandDispatcher(new GridViewModel<Book> {Options = {Command = GridCommand.Filter}}, null, gridOptions);
         }
     }
 }
