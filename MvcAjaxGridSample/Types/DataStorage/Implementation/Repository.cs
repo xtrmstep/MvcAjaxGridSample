@@ -8,9 +8,9 @@ namespace MvcAjaxGridSample.Types.DataStorage.Implementation
     {
         protected readonly Dictionary<int, T> _internalStorage = new Dictionary<int, T>(); 
 
-        public IEnumerable<T> Get()
+        public IQueryable<T> Get()
         {
-            return _internalStorage.Values;
+            return _internalStorage.Values.AsQueryable();
         }
 
         public T Get(int id)

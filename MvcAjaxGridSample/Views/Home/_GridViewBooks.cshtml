@@ -1,0 +1,58 @@
+﻿@using MvcAjaxGridSample.Models
+@using MvcAjaxGridSample.Types
+@model MvcAjaxGridSample.Models.GridViewModel<MvcAjaxGridSample.Types.DataModel.Book>
+
+@Html.AntiForgeryToken()   
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th class="col-sm-2"></th>
+            <th>Title</th>
+            <th>Year</th>
+        </tr>
+    </thead>
+    <tr class="info">
+        <td>
+            @Html.Command("Apply", m => m.Command, GridCommand.Filter)
+            @Html.Command("Clear", m => m.Command, GridCommand.FilterClear)
+        </td>
+        <td>@Html.EditorFor(m => m.Filter.Title)</td>
+        <td>@Html.EditorFor(m => m.Filter.IssueYear)</td>
+    </tr>
+    <tbody>
+        @foreach (var book in Model.Data)
+        {
+            <tr>
+                <td>
+                    @Html.Command("Edit", m => m.Command, GridCommand.Edit)
+                    @Html.Command("Delete", m => m.Command, GridCommand.Delete)
+                </td>
+                <td>@book.Title</td>
+                <td>@book.IssueYear</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <div class="pull-left">
+        <button type="submit" class="btn btn-xs btn-primary"  name="@Html.NameFor(m => m.Command)" value="@GridCommand.New">New</button>
+    </div>
+    <div class="pull-right">
+        <div>
+            @Html.HiddenFor(m => m.Paging.TotalItems)
+            @Html.HiddenFor(m => m.Paging.TotalPages)
+            @Html.HiddenFor(m => m.Paging.PageSize)
+
+            @* BY SOME REASON THE FOLLOWING LINE MAKE THE PAGING NOT WORKING. PageIndex REMAINS UNCHANGED THROUGH POSTs. MAY BE VALIDATION PRODUCE SOME EFFECT ON THAT?  *@
+            
+            @Html.HiddenFor(m => m.Paging.PageIndex)
+
+            @Html.Command("<", m => m.Command, GridCommand.PageLeft)
+            <span>@Model.Paging.PageIndex</span>
+            /
+            <span>@Html.ValueFor(m => m.Paging.TotalPages)</span>
+            @Html.Command(">", m => m.Command, GridCommand.PageRight)
+            @Html.Command("Go", m => m.Command, GridCommand.GoTo)
+        </div>
+    </div>
+</div>

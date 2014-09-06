@@ -12,7 +12,7 @@ namespace MvcAjaxGridSample.Models
         {
             Data = new T[0];
             Filter = new GridFilterViewModel();
-            Paging = new GridPagingViewModel(0, Configuration.Grid.PageSize);
+            Paging = new GridPagingViewModel();
         }
 
         /// <summary>
@@ -29,5 +29,7 @@ namespace MvcAjaxGridSample.Models
         ///     Contains information about pagination of the grid
         /// </summary>
         public GridPagingViewModel Paging { get; set; }
+
+        public GridCommand? Command { get; set; }
     }
 }

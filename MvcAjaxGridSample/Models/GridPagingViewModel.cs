@@ -5,15 +5,6 @@
     /// </summary>
     public class GridPagingViewModel
     {
-        public GridPagingViewModel(int totalItems, int pageSize)
-        {
-            PageSize = pageSize == 0 ? 1 : pageSize;
-            PageIndex = 1;
-            TotalItems = totalItems;
-            TotalPages = totalItems == 0 ? 1 : totalItems/pageSize + 1;
-            GoToIndex = null;
-        }
-
         /// <summary>
         ///     Total items in requested data
         /// </summary>
@@ -22,7 +13,7 @@
         /// <summary>
         ///     Total pages for current page size
         /// </summary>
-        public int TotalPages { get; private set; }
+        public int TotalPages { get; set; }
 
         /// <summary>
         ///     Number of item on a single page

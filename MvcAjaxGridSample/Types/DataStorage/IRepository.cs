@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using MvcAjaxGridSample.Types.DataModel;
 
 namespace MvcAjaxGridSample.Types.DataStorage
@@ -10,7 +11,7 @@ namespace MvcAjaxGridSample.Types.DataStorage
 
     public interface IRepository<T> : IRepository where T : Entity
     {
-        IEnumerable<T> Get();
+        IQueryable<T> Get();
         T Get(int id);
         void Delete(int id);
         void Save(T item);
