@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcAjaxGridSample", "MvcAjaxGridSample\MvcAjaxGridSample.csproj", "{C5541503-DC67-48F6-80E1-EFB513CF4EE7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcAjaxGridSampleTests", "MvcAjaxGridSampleTests\MvcAjaxGridSampleTests.csproj", "{22AB662A-2025-4476-940D-9DCE4D73E1EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{C5541503-DC67-48F6-80E1-EFB513CF4EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5541503-DC67-48F6-80E1-EFB513CF4EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5541503-DC67-48F6-80E1-EFB513CF4EE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22AB662A-2025-4476-940D-9DCE4D73E1EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22AB662A-2025-4476-940D-9DCE4D73E1EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22AB662A-2025-4476-940D-9DCE4D73E1EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22AB662A-2025-4476-940D-9DCE4D73E1EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,7 +5,6 @@ using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
 using SampleAjaxFormInMVC;
-using Module = Autofac.Module;
 
 namespace MvcAjaxGridSample
 {
@@ -22,7 +21,7 @@ namespace MvcAjaxGridSample
             RouteConfig.RegisterRoutes(RouteTable.Routes);
         }
 
-        public static IContainer RegisterTypes(Module module)
+        public static IContainer RegisterTypes(Autofac.Module module)
         {
             var builder = new ContainerBuilder();
             builder.RegisterControllers(Assembly.GetExecutingAssembly());
