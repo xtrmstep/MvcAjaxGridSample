@@ -18,6 +18,8 @@
         public T[] Data { get; set; }
 
         public GridOptions Options { get; set; }
+        public int? EditId { get; set; }
+        public int? DeletedId { get; set; }
 
         public class GridOptions
         {

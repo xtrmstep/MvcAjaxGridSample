@@ -6,7 +6,7 @@ namespace MvcAjaxGridSample.Types.DataStorage.Implementation
 {
     public class Repository<T> : IRepository<T> where T : Entity
     {
-        protected readonly Dictionary<int, T> _internalStorage = new Dictionary<int, T>(); 
+        protected static readonly Dictionary<int, T> _internalStorage = new Dictionary<int, T>();
 
         public IQueryable<T> Get()
         {

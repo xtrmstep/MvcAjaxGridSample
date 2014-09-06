@@ -12,16 +12,25 @@ namespace MvcAjaxGridSample.Controllers
     public class HomeController : Controller
     {
         private readonly IRepository<Book> _bookRepository;
+        private static bool _repositoryIsInitialized = false;
+        private static readonly object _lock = new object();
 
         public HomeController(IRepository<Book> bookRep)
         {
             _bookRepository = bookRep;
 
-            _bookRepository.Save(new Book {Title = "Book 1", IssueYear = 2001});
-            _bookRepository.Save(new Book {Title = "Book 2", IssueYear = 2002});
-            _bookRepository.Save(new Book {Title = "Book 3", IssueYear = 2003});
-            _bookRepository.Save(new Book {Title = "Book 4", IssueYear = 2004});
-            _bookRepository.Save(new Book {Title = "Book 5", IssueYear = 2005});
+            // initialize sample storage only once
+            if(!_repositoryIsInitialized)
+                lock (_lock)
+                    if (!_repositoryIsInitialized)
+                    {
+                        _bookRepository.Save(new Book {Title = "Book 1", IssueYear = 2001});
+                        _bookRepository.Save(new Book {Title = "Book 2", IssueYear = 2002});
+                        _bookRepository.Save(new Book {Title = "Book 3", IssueYear = 2003});
+                        _bookRepository.Save(new Book {Title = "Book 4", IssueYear = 2004});
+                        _bookRepository.Save(new Book {Title = "Book 5", IssueYear = 2005});
+                        _repositoryIsInitialized = true;
+                    }
         }
 
         public ActionResult Index()
@@ -53,6 +62,14 @@ namespace MvcAjaxGridSample.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult CommandDispatcher(GridViewModel<Book> model, string gridOptions)
         {
+            if (model.EditId.HasValue)
+            {
+                
+            }
+            if (model.DeletedId.HasValue)
+                _bookRepository.Delete(model.DeletedId.Value);
+
+
             var options = (GridViewModel<Book>.GridOptions)new MvcSerializer().Deserialize(gridOptions, SerializationMode.Signed);
             options.Command = model.Options.Command;
             var books = _bookRepository.Get();
@@ -84,7 +101,8 @@ namespace MvcAjaxGridSample.Controllers
 
             var totalCount = books.Count();
             options.Paging.TotalItems = totalCount;
-            options.Paging.TotalPages = totalCount / options.Paging.PageSize + 1;
+            options.Paging.TotalPages = totalCount / options.Paging.PageSize;
+            if (totalCount%options.Paging.PageSize > 0) options.Paging.TotalPages++;
 
             // changing a page
             switch (options.Command)
