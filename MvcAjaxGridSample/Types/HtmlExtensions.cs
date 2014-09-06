@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
@@ -20,6 +21,25 @@ namespace MvcAjaxGridSample.Types
             btn.Attributes["value"] = command.ToString();
             btn.SetInnerText(text);
             return new MvcHtmlString(btn.ToString());
+        }
+
+        public static IHtmlString SimpleHidden<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> nameProperty, object value)
+        {
+            var inp = new TagBuilder("input");
+            inp.Attributes["type"] = "hidden";
+            inp.Attributes["name"] = html.NameFor(nameProperty).ToString();
+            inp.Attributes["value"] = value.ToString();
+            return new MvcHtmlString(inp.ToString());
+        }
+
+        public static IHtmlString SimpleEdit<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> nameProperty, object value, IDictionary<string, object> htmlAttributes = null)
+        {
+            var inp = new TagBuilder("input");
+            inp.Attributes["type"] = "text";
+            inp.Attributes["name"] = html.NameFor(nameProperty).ToString();
+            inp.Attributes["value"] = value.ToString();
+            if (htmlAttributes != null) inp.MergeAttributes(htmlAttributes, true);
+            return new MvcHtmlString(inp.ToString());
         }
     }
 }

@@ -36,7 +36,7 @@ namespace MvcAjaxGridSample.Controllers
                     PageSize = pageSize,
                     PageIndex = 1,
                     TotalItems = totalCount,
-                    TotalPages = 3
+                    TotalPages = totalCount / pageSize + 1
                 }
             };
 
@@ -54,29 +54,20 @@ namespace MvcAjaxGridSample.Controllers
             switch (model.Command)
             {
                 case GridCommand.PageLeft:
-                    model.Paging.PageIndex = Math.Max(model.Paging.PageIndex-1, 1);
+                    model.Paging.PageIndex = Math.Max(model.Paging.PageIndex - 1, 1);
                     break;
                 case GridCommand.PageRight:
-                    model.Paging.PageIndex = Math.Min(model.Paging.PageIndex+1, model.Paging.TotalPages);
+                    model.Paging.PageIndex = Math.Min(model.Paging.PageIndex + 1, model.Paging.TotalPages);
+                    break;
+                    case GridCommand.GoTo:
+                    model.Paging.PageIndex = Math.Max(Math.Min(model.Paging.PageIndex, model.Paging.TotalPages), 1);
                     break;
             }
 
             var data = books.Skip(Configuration.Grid.PageSize * (model.Paging.PageIndex - 1)).Take(Configuration.Grid.PageSize);
             model.Data = data.ToArray();
 
-            var model1 = new GridViewModel<Book>
-            {
-                Data = model.Data,
-                Filter = model.Filter,
-                Paging = new GridPagingViewModel
-                {
-                    PageSize = 2,
-                    PageIndex = model.Paging.PageIndex,
-                    TotalItems = books.Count(),
-                    TotalPages = 3
-                }
-            };
-            return PartialView("_GridViewBooks", model1);
+            return PartialView("_GridViewBooks", model);
         }
     }
 }

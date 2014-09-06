@@ -24,6 +24,5 @@
         ///     Current page index
         /// </summary>
         public int PageIndex { get; set; }
-        public int? GoToIndex { get; set; }
     }
 }

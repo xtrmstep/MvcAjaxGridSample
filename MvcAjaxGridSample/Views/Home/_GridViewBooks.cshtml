@@ -39,16 +39,12 @@
     </div>
     <div class="pull-right">
         <div>
-            @Html.HiddenFor(m => m.Paging.TotalItems)
-            @Html.HiddenFor(m => m.Paging.TotalPages)
-            @Html.HiddenFor(m => m.Paging.PageSize)
-
-            @* BY SOME REASON THE FOLLOWING LINE MAKE THE PAGING NOT WORKING. PageIndex REMAINS UNCHANGED THROUGH POSTs. MAY BE VALIDATION PRODUCE SOME EFFECT ON THAT?  *@
+            @Html.SimpleHidden(m => m.Paging.TotalItems, Model.Paging.TotalItems)
+            @Html.SimpleHidden(m => m.Paging.TotalPages, Model.Paging.TotalPages)
             
-            @Html.HiddenFor(m => m.Paging.PageIndex)
 
             @Html.Command("<", m => m.Command, GridCommand.PageLeft)
-            <span>@Model.Paging.PageIndex</span>
+            @Html.SimpleEdit(m => m.Paging.PageIndex, Model.Paging.PageIndex, new Dictionary<string, object>{{"style","width:30px"}})
             /
             <span>@Html.ValueFor(m => m.Paging.TotalPages)</span>
             @Html.Command(">", m => m.Command, GridCommand.PageRight)
