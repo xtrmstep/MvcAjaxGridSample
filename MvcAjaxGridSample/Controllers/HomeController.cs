@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
+using Microsoft.Web.Mvc;
 using MvcAjaxGridSample.Models;
 using MvcAjaxGridSample.Types;
 using MvcAjaxGridSample.Types.DataModel;
@@ -31,76 +32,78 @@ namespace MvcAjaxGridSample.Controllers
             var pageSize = Configuration.Grid.PageSize;
             var model = new GridViewModel<Book>
             {
-                Paging = new GridPagingViewModel
+                Options =
                 {
-                    PageSize = pageSize,
-                    PageIndex = 1,
-                    TotalItems = totalCount,
-                    TotalPages = totalCount/pageSize + 1
+                    Paging = new GridPagingViewModel
+                    {
+                        PageSize = pageSize,
+                        PageIndex = 1,
+                        TotalItems = totalCount,
+                        TotalPages = totalCount/pageSize + 1
+                    }
                 }
             };
 
-            var data = books.Skip(pageSize*(model.Paging.PageIndex - 1)).Take(pageSize);
+            var data = books.Skip(pageSize*(model.Options.Paging.PageIndex - 1)).Take(pageSize);
             model.Data = data.ToArray();
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CommandDispatcher(GridViewModel<Book> model)
+        public ActionResult CommandDispatcher(GridViewModel<Book> model, string gridOptions)
         {
+            var options = (GridViewModel<Book>.GridOptions)new MvcSerializer().Deserialize(gridOptions, SerializationMode.Signed);
+            options.Command = model.Options.Command;
             var books = _bookRepository.Get();
 
             // filtering if command = filter or clear
-            if (model.Command == GridCommand.Filter || model.Command == GridCommand.FilterClear)
+            if (options.Command == GridCommand.Filter || options.Command == GridCommand.FilterClear)
             {
-                switch (model.Command)
+                switch (options.Command)
                 {
                     case GridCommand.Filter:
-                        model.Filter.Current.Title = model.Filter.Title;
-                        model.Filter.Current.IssueYear = model.Filter.IssueYear;
+                        options.Filter.Title = model.Options.Filter.Title;
+                        options.Filter.IssueYear = model.Options.Filter.IssueYear;
                         break;
                     case GridCommand.FilterClear:
-                        model.Filter.Current.Title = model.Filter.Title = null;
-                        model.Filter.Current.IssueYear = model.Filter.IssueYear = null;
+                        options.Filter.Title = null;
+                        options.Filter.IssueYear = null;
                         break;
                 }
-                if (string.IsNullOrWhiteSpace(model.Filter.Current.Title) == false)
-                    books = books.Where(b => b.Title.Contains(model.Filter.Current.Title));
-                if (model.Filter.Current.IssueYear.HasValue)
-                    books = books.Where(b => b.IssueYear == model.Filter.Current.IssueYear.Value);
-
-                // update paging
-
-                var totalCount = books.Count();
-                model.Paging.PageIndex = 1;
-                model.Paging.TotalItems = totalCount;
-                model.Paging.TotalPages = totalCount/model.Paging.PageSize + 1;
+                options.Paging.PageIndex = 1;
             }
-            else
-            {
-                // restore filter to the active one if Apply/Clear was not pressed
 
-                model.Filter.Title = model.Filter.Current.Title;
-                model.Filter.IssueYear = model.Filter.Current.IssueYear;
-            }
+
+            if (string.IsNullOrWhiteSpace(options.Filter.Title) == false)
+                books = books.Where(b => b.Title.Contains(options.Filter.Title));
+            if (options.Filter.IssueYear.HasValue)
+                books = books.Where(b => b.IssueYear == options.Filter.IssueYear.Value);
+
+            // update paging
+
+            var totalCount = books.Count();
+            options.Paging.TotalItems = totalCount;
+            options.Paging.TotalPages = totalCount / options.Paging.PageSize + 1;
 
             // changing a page
-            switch (model.Command)
+            switch (options.Command)
             {
                 case GridCommand.PageLeft:
-                    model.Paging.PageIndex = Math.Max(model.Paging.PageIndex - 1, 1);
+                    options.Paging.PageIndex = Math.Max(options.Paging.PageIndex - 1, 1);
                     break;
                 case GridCommand.PageRight:
-                    model.Paging.PageIndex = Math.Min(model.Paging.PageIndex + 1, model.Paging.TotalPages);
+                    options.Paging.PageIndex = Math.Min(options.Paging.PageIndex + 1, options.Paging.TotalPages);
                     break;
                 case GridCommand.GoTo:
-                    model.Paging.PageIndex = Math.Max(Math.Min(model.Paging.PageIndex, model.Paging.TotalPages), 1);
+                    options.Paging.PageIndex = Math.Max(Math.Min(model.Options.Paging.PageIndex, options.Paging.TotalPages), 1);
                     break;
             }
 
-            var data = books.Skip(Configuration.Grid.PageSize*(model.Paging.PageIndex - 1)).Take(Configuration.Grid.PageSize);
+            var data = books.Skip(Configuration.Grid.PageSize * (options.Paging.PageIndex - 1)).Take(Configuration.Grid.PageSize);
+
             model.Data = data.ToArray();
+            model.Options = options;
             return PartialView("_GridViewBooks", model);
         }
     }

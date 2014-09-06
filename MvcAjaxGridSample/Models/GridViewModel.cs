@@ -9,8 +9,7 @@
         public GridViewModel()
         {
             Data = new T[0];
-            Filter = new GridFilterViewModel {Current = new GridFilterViewModel()};
-            Paging = new GridPagingViewModel();
+            Options = new GridOptions();
         }
 
         /// <summary>
@@ -18,16 +17,27 @@
         /// </summary>
         public T[] Data { get; set; }
 
-        /// <summary>
-        ///     Contains information about column filters
-        /// </summary>
-        public GridFilterViewModel Filter { get; set; }
+        public GridOptions Options { get; set; }
 
-        /// <summary>
-        ///     Contains information about pagination of the grid
-        /// </summary>
-        public GridPagingViewModel Paging { get; set; }
+        public class GridOptions
+        {
+            public GridOptions()
+            {
 
-        public GridCommand? Command { get; set; }
+                Filter = new GridFilterViewModel();
+                Paging = new GridPagingViewModel();
+            }
+            /// <summary>
+            ///     Contains information about column filters
+            /// </summary>
+            public GridFilterViewModel Filter { get; set; }
+
+            /// <summary>
+            ///     Contains information about pagination of the grid
+            /// </summary>
+            public GridPagingViewModel Paging { get; set; }
+
+            public GridCommand? Command { get; set; }   
+        }
     }
 }

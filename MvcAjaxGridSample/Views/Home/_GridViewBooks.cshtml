@@ -1,11 +1,10 @@
-﻿@using MvcAjaxGridSample.Models
+﻿@using Microsoft.Web.Mvc
+@using MvcAjaxGridSample.Models
 @using MvcAjaxGridSample.Types
 @model GridViewModel<MvcAjaxGridSample.Types.DataModel.Book>
 
 @Html.AntiForgeryToken()
-@Html.SimpleHidden(m => m.Filter.Current.Title, Model.Filter.Current.Title)
-@Html.SimpleHidden(m => m.Filter.Current.IssueYear, Model.Filter.Current.IssueYear)
-
+@Html.Serialize("gridOptions", Model.Options)
 <table class="table table-hover">
     <thead>
         <tr>
@@ -16,19 +15,19 @@
     </thead>
     <tr class="info">
         <td>
-            @Html.Command("Apply", m => m.Command, GridCommand.Filter)
-            @Html.Command("Clear", m => m.Command, GridCommand.FilterClear)
+            @Html.Command("Apply", m => m.Options.Command, GridCommand.Filter)
+            @Html.Command("Clear", m => m.Options.Command, GridCommand.FilterClear)
         </td>
-        <td>@Html.SimpleEdit(m => m.Filter.Title, Model.Filter.Title)</td>
-        <td>@Html.SimpleEdit(m => m.Filter.IssueYear, Model.Filter.IssueYear)</td>
+        <td>@Html.SimpleEdit(m => m.Options.Filter.Title, Model.Options.Filter.Title)</td>
+        <td>@Html.SimpleEdit(m => m.Options.Filter.IssueYear, Model.Options.Filter.IssueYear)</td>
     </tr>
     <tbody>
         @foreach (var book in Model.Data)
         {
             <tr>
                 <td>
-                    @Html.Command("Edit", m => m.Command, GridCommand.Edit)
-                    @Html.Command("Delete", m => m.Command, GridCommand.Delete)
+                    @Html.Command("Edit", m => m.Options.Command, GridCommand.Edit)
+                    @Html.Command("Delete", m => m.Options.Command, GridCommand.Delete)
                 </td>
                 <td>@book.Title</td>
                 <td>@book.IssueYear</td>
@@ -38,21 +37,16 @@
 </table>
 <div>
     <div class="pull-left">
-        <button type="submit" class="btn btn-xs btn-primary"  name="@Html.NameFor(m => m.Command)" value="@GridCommand.New">New</button>
+        <button type="submit" class="btn btn-xs btn-primary"  name="@Html.NameFor(m => m.Options.Command)" value="@GridCommand.New">New</button>
     </div>
     <div class="pull-right">
         <div>
-            @Html.SimpleHidden(m => m.Paging.TotalItems, Model.Paging.TotalItems)
-            @Html.SimpleHidden(m => m.Paging.TotalPages, Model.Paging.TotalPages)
-            @Html.SimpleHidden(m => m.Paging.PageSize, Model.Paging.PageSize)
-            
-
-            @Html.Command("<", m => m.Command, GridCommand.PageLeft)
-            @Html.SimpleEdit(m => m.Paging.PageIndex, Model.Paging.PageIndex, new Dictionary<string, object>{{"style","width:30px"}})
+            @Html.Command("<", m => m.Options.Command, GridCommand.PageLeft)
+            @Html.SimpleEdit(m => m.Options.Paging.PageIndex, Model.Options.Paging.PageIndex, new Dictionary<string, object>{{"style","width:30px"}})
             /
-            <span>@Model.Paging.TotalPages</span>
-            @Html.Command(">", m => m.Command, GridCommand.PageRight)
-            @Html.Command("Go", m => m.Command, GridCommand.GoTo)
+            <span>@Model.Options.Paging.TotalPages</span>
+            @Html.Command(">", m => m.Options.Command, GridCommand.PageRight)
+            @Html.Command("Go", m => m.Options.Command, GridCommand.GoTo)
         </div>
     </div>
 </div>
