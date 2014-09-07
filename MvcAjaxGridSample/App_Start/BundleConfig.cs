@@ -10,7 +10,8 @@ namespace MvcAjaxGridSample
             bundle.Add(new ScriptBundle("~/scripts/core").Include(
                 "~/Scripts/jquery-{version}.js",
                 "~/Scripts/jquery.unobtrusive-ajax.js",
-                "~/Scripts/bootstrap.js"
+                "~/Scripts/bootstrap.js",
+                "~/Scripts/MvcAjaxGridSample.js"
                 ));
 
             //styles
