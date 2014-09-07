@@ -5,7 +5,7 @@ Ajax grid sample built with MVC AjaxHelper
 
 Important
 -----------------
-* Components composing and interaction during AJAX calls
+* Grid elements and their interactions during AJAX calls
 * Using AjaxHelper to build AJAX grid with filtering and paging
 * Validation in AJAX scenarious (handling validation errors after AJAX call to MVC action)
 * Custom ActionResult
