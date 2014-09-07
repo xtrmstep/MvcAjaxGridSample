@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using Microsoft.Web.Mvc;
 using MvcAjaxGridSample.Models;
@@ -60,13 +61,13 @@ namespace MvcAjaxGridSample.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CommandDispatcher(GridViewModel<Book> model, string gridOptions, GridViewModel<Book>.GridOptions overrideOptions = null)
+        public ActionResult CommandDispatcher(GridViewModel<Book> model, string gridOptions)
         {
             if (model.DeletedId.HasValue)
                 _bookRepository.Delete(model.DeletedId.Value);
 
 
-            var options = overrideOptions ?? (GridViewModel<Book>.GridOptions)new MvcSerializer().Deserialize(gridOptions, SerializationMode.Signed);
+            var options = (GridViewModel<Book>.GridOptions)new MvcSerializer().Deserialize(gridOptions, SerializationMode.Signed);
             options.Command = model.Options.Command;
             var books = _bookRepository.Get();
 
@@ -133,23 +134,35 @@ namespace MvcAjaxGridSample.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Save(Book book)
         {
-            _bookRepository.Save(book);
-
-            var gridOptions = new GridViewModel<Book>.GridOptions
+            if (ModelState.IsValid)
             {
-                Filter =
-                {
-                    Title = book.Title,
-                    IssueYear = book.IssueYear
-                },
-                Paging =
-                {
-                    PageIndex = 1,
-                    PageSize = Configuration.Grid.PageSize
-                }
-            };
+                _bookRepository.Save(book);
 
-            return CommandDispatcher(new GridViewModel<Book> {Options = {Command = GridCommand.Filter}}, null, gridOptions);
+                var gridOptions = new GridViewModel<Book>.GridOptions
+                {
+                    Filter =
+                    {
+                        Title = book.Title,
+                        IssueYear = book.IssueYear
+                    },
+                    Paging =
+                    {
+                        PageIndex = 1,
+                        PageSize = Configuration.Grid.PageSize
+                    }
+                };
+                var options = new MvcSerializer().Serialize(gridOptions, SerializationMode.Signed);
+                var model = new GridViewModel<Book> {Options = {Command = GridCommand.Filter}};
+                return CommandDispatcher(model, options);
+            }
+            var allErrors = ModelState.Values.SelectMany(v => v.Errors);
+            return Json(allErrors);
+        }
+
+        public ActionResult New()
+        {
+            var book = new Book();
+            return PartialView("_EditBook", book);
         }
     }
 }

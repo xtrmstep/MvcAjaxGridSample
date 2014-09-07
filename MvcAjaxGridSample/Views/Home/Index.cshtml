@@ -3,9 +3,16 @@
 @section scripts {
     <script>
         function ShowEditDialog() {
-            $('#editBookDialog').modal({
-                
-            });
+            $('#editBookDialog').modal();
+        }
+        function CloseEditDialog() {
+            $('#editBookDialog').modal('hide');
+        }
+        function ShowErrorsInDialog(err) {
+            var $form = $("[role='editDialog']");
+            var validator = $form.validate();
+            var errors = $.parseJSON(err);
+            validator.showErrors(errors);
         }
         function GetAntiForgeryToken() {
             var tokenField = $("input[type='hidden'][name$='RequestVerificationToken']");
@@ -41,7 +48,7 @@
         @Html.Partial("_GridViewBooks", Model)
     </div>
 }
-@using (Ajax.BeginForm("Save", "Home", new AjaxOptions {HttpMethod = "POST", UpdateTargetId = "ajaxGrid"}))
+@using (Ajax.BeginForm("Save", "Home", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "ajaxGrid", OnFailure = "ShowErrorsInDialog", OnSuccess = "CloseEditDialog" }, new{role="editDialog"}))
 {
     <div id="editBookDialogContent" class="container"></div>
 }
