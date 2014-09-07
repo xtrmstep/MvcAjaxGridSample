@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mime;
+using System.Text;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using Microsoft.Web.Mvc;
@@ -155,8 +159,45 @@ namespace MvcAjaxGridSample.Controllers
                 var model = new GridViewModel<Book> {Options = {Command = GridCommand.Filter}};
                 return CommandDispatcher(model, options);
             }
-            var allErrors = ModelState.Values.SelectMany(v => v.Errors);
-            return Json(allErrors);
+            return ModelStateResult(ModelState);
+        }
+
+        private ActionResult ModelStateResult(ModelStateDictionary modelState)
+        {
+            return new ModelValidationResult { IsValid = modelState.IsValid, ModelState = modelState };
+        }
+
+        class ModelValidationResult : ActionResult
+        {
+            public override void ExecuteResult(ControllerContext context)
+            {
+                var httpContext = context.RequestContext.HttpContext;
+                httpContext.ClearError();
+
+                var response = httpContext.Response;
+                response.Clear();
+                response.ContentEncoding = Encoding.UTF8;
+                response.HeaderEncoding = Encoding.UTF8;
+                response.TrySkipIisCustomErrors = true;
+                response.StatusCode = (int) (IsValid ? HttpStatusCode.OK : HttpStatusCode.InternalServerError);
+
+                response.ContentType = "application/json";
+
+                var errors = ModelState
+                    .Where(ms => ms.Value.Errors.Count > 0)
+                    .Select(ms => new
+                    {
+                        Field = ms.Key,
+                        ErrorMessage = string.Join(";", ms.Value.Errors.Select(e => e.ErrorMessage))
+                    }).ToArray();
+
+                var jsonResult = System.Web.Helpers.Json.Encode(errors);
+                var bytes = Encoding.ASCII.GetBytes(jsonResult);
+                response.BinaryWrite(bytes);
+            }
+
+            public bool IsValid { get; set; }
+            public ModelStateDictionary ModelState { get; set; }
         }
 
         public ActionResult New()
