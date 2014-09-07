@@ -5,11 +5,24 @@ function SuccessSaveEditDialog(data, status, xhr) {
     $('#editBookDialog').modal('hide');
 }
 function FailureSaveEditDialog(xhr, status, err) {
-    if (xhr.status == 500) // internal server error
+    if (status == "error")
     {
-        //if (xhr.responseJSON) {
-
-        //} else
+        if (xhr.responseJSON) {
+            $(".form-group").removeClass('has-error');
+            $(".form-group input").tooltip('destroy');
+            for (var i = 0; i < xhr.responseJSON.length; i++) {
+                var name = xhr.responseJSON[i].Field;
+                var errorMessage = xhr.responseJSON[i].ErrorMessage;
+                var selectorGroup = "[role='editor-" + name + "']";
+                $(selectorGroup).addClass('has-error');
+                var selectorEditor = "input[name='" + name + "']";
+                $(selectorEditor)
+                    .attr("data-toggle", "tooltip")
+                    .attr("data-placement", "top")
+                    .attr("title", errorMessage);
+                $(selectorEditor).tooltip();
+            }
+        } else
             if (xhr.responseText) {
             alert(xhr.responseText);
         }

@@ -131,10 +131,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="Controllers\ActionResults\ModelValidationResult.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\BookEditViewModel.cs" />
     <Compile Include="Models\GridCommand.cs" />
     <Compile Include="Models\GridFilterViewModel.cs" />
     <Compile Include="Models\GridPagingViewModel.cs" />
