@@ -11,12 +11,12 @@
             <div class="modal-body">
                 @Html.HiddenFor(m => m.Id)
                 <div class="form-group" role="editor-@Html.NameFor(m => m.Title)">
-                    <label class="control-label" for="@Html.NameFor(m => m.Title)">@Html.DisplayFor(m => m.Title)</label>
-                    @Html.SimpleEdit(m => m.Title, Model.Title, new Dictionary<string, object>{{"class", "form-control"}})
+                    @Html.LabelFor(m => m.Title, new {@class = "control-label"})
+                    @Html.SimpleEdit(m => m.Title, Model.Title, new Dictionary<string, object> {{"class", "form-control"}})
                 </div>
                 <div class="form-group" role="editor-@Html.NameFor(m => m.IssueYear)">
-                    <label class="control-label" for="@Html.NameFor(m => m.IssueYear)">@Html.DisplayFor(m => m.IssueYear)</label>
-                    @Html.SimpleEdit(m => m.IssueYear, Model.IssueYear, new Dictionary<string, object>{{"class", "form-control"}})
+                    @Html.LabelFor(m => m.IssueYear, new {@class = "control-label"})
+                    @Html.SimpleEdit(m => m.IssueYear, Model.IssueYear, new Dictionary<string, object> {{"class", "form-control"}})
                 </div>
             </div>
             <div class="modal-footer">

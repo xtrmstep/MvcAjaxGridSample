@@ -18,7 +18,7 @@ namespace MvcAjaxGridSample.Models
 
             if (string.IsNullOrWhiteSpace(Title))
                 result.Add(new ValidationResult("Value is required.", new[] { "Title" }));
-            if (Title.Length < 5)
+            else if (Title.Length < 5)
                 result.Add(new ValidationResult("Length must be greater than 5.", new[] {"Title"}));
 
             if (!IssueYear.HasValue)

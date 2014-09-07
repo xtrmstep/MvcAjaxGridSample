@@ -162,7 +162,6 @@ namespace MvcAjaxGridSample.Controllers
             return new ModelValidationActionResult(ModelState);
         }
 
-
         public ActionResult New()
         {
             var book = new Book();
