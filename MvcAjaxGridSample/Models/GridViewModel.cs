@@ -1,4 +1,7 @@
-﻿namespace MvcAjaxGridSample.Models
+﻿using System.Linq;
+using System.Reflection;
+
+namespace MvcAjaxGridSample.Models
 {
     /// <summary>
     ///     Provides a generic interface to grid data
@@ -8,37 +11,30 @@
     {
         public GridViewModel()
         {
+            Columns = typeof(T)
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(p => p.Name.ToUpper() != "ID")
+                .Select(p => p.Name)
+                .ToArray();
+
             Data = new T[0];
-            Options = new GridOptions();
+            Options = new GridOptions
+            {
+                Filter = new GridFilter<T>(),
+                Sorting = new GridSorting<T>(),
+                Paging = new GridPaging()
+            };
         }
 
-        /// <summary>
-        ///     Array of items to be shown in the grid
-        /// </summary>
+        public string[] Columns { get; set; }
         public T[] Data { get; set; }
 
         public GridOptions Options { get; set; }
-        public int? DeletedId { get; set; }
-
         public class GridOptions
         {
-            public GridOptions()
-            {
-
-                Filter = new GridFilterViewModel();
-                Paging = new GridPagingViewModel();
-            }
-            /// <summary>
-            ///     Contains information about column filters
-            /// </summary>
-            public GridFilterViewModel Filter { get; set; }
-
-            /// <summary>
-            ///     Contains information about pagination of the grid
-            /// </summary>
-            public GridPagingViewModel Paging { get; set; }
-
-            public GridCommand? Command { get; set; }   
+            public GridFilter<T> Filter { get; set; }
+            public GridSorting<T> Sorting { get; set; }
+            public GridPaging Paging { get; set; }
         }
     }
 }

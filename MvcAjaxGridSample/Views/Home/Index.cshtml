@@ -1,12 +1,117 @@
-﻿@model MvcAjaxGridSample.Models.GridViewModel<MvcAjaxGridSample.Types.DataModel.Book>
+﻿@using Microsoft.Web.Mvc
+@using MvcAjaxGridSample.Models
+@model GridViewModel<BookViewModel>
 
-@using (Ajax.BeginForm("CommandDispatcher", "Home", new AjaxOptions {HttpMethod = "POST", UpdateTargetId = "ajaxGrid"}))
-{
-    <div id="ajaxGrid" class="container">
-        @Html.Partial("_GridViewBooks", Model)
+@section scripts{
+    <script>
+        $(document).ready(function() {
+            $("[data-page]").click(function() {
+                var gridOptions = $("#gridOptions").val();
+                var data = { options: gridOptions };
+                if (data.pageIndex == "up" || data.pageIndex == "down") {
+                    var currentPageIndex = $("[data-role='pageIndex']").val();
+                    currentPageIndex = currentPageIndex + (data.pageIndex == "up" ? 1 : -1);
+                    data.pageIndex = currentPageIndex;
+                }
+            $.post("@Url.Action("GoToPage", "Home")", data)
+                .success(function(xhr, status, err) {
+                    $("[data-role='data']").html("");
+                });
+
+        });
+        });
+    </script>
+}
+<div id="ajaxGrid" class="container">
+    @Html.Hidden("gridOptions", Json.Encode(Model.Options))
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th class="col-sm-2"></th>
+                @for (var colIndex = 0; colIndex < Model.Columns.Length; colIndex++)
+                {
+                    var sorting = Model.Sorting.Fields[colIndex];
+                    if (sorting.Acsending.HasValue)
+                    {
+                        var ascending = sorting.Acsending.Value ? "glyphicon-chevron-up" : "glyphicon-chevron-down";
+                        <th><a href="#" data-role="sorting" data-column="@Model.Columns[colIndex]" data-sorting="@sorting.Acsending.Value">@Model.Columns[colIndex]&nbsp;<span class="glyphicon @ascending"></span></a></th>
+                    }
+                    else
+                    {
+                        <th><a href="#" data-role="sorting" data-column="@Model.Columns[colIndex]">@Model.Columns[colIndex]</a></th>
+                    }
+                }
+            </tr>
+        </thead>
+        
+        <tr>
+            <td class="col-sm-2">
+                @Html.Button("Apply", "Apply", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn"})
+                @Html.Button("Clear", "Clear", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn"})
+            </td>
+            @foreach (var filter in Model.Filter.Fields)
+            {
+                <td>@Html.TextBox(filter.Name, filter.Value, new {data_role="filter"})</td>
+            }
+        </tr>
+        <tbody data-role="data">
+            @foreach (var book in Model.Data)
+            {
+                <tr data-id="@book.Id">
+                    <td>
+                        @Html.Button("Edit", "Edit", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn"})
+                        @Html.Button("Delete", "Delete", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn"})
+                    </td>
+                    <td>@book.Title</td>
+                    <td>@book.IssueYear</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        <div class="pull-left">
+            @Html.Button("New", "New", HtmlButtonType.Button, null, new {@class = "btn-primary btn-xs btn"})
+        </div>
+        <div class="pull-right">
+            <ul class="pagination">
+                
+                @for (var pageIndex = 1; pageIndex <= Model.Paging.TotalPages; pageIndex++)
+                {
+                    if (pageIndex == 1)
+                    {
+                        if (Model.Paging.PageIndex == pageIndex)
+                        {
+                            <li class="disabled"><a href="#">&laquo;</a></li>
+                        }
+                        else
+                        {
+                            <li><a href="#" data-page="down">&laquo;</a></li>
+                        }
+                    }
+                    
+                    if (Model.Paging.PageIndex == pageIndex)
+                    {
+                        <li class="active"><a href="#">@pageIndex <span class="sr-only">(current)</span></a></li>
+                    }
+                    else
+                    {
+                        <li><a href="#" data-page="@pageIndex">@pageIndex</a></li>
+                    }
+
+                    if (pageIndex == Model.Paging.TotalPages)
+                    {
+                        if (Model.Paging.PageIndex == pageIndex)
+                        {
+                            <li class="disabled"><a href="#">&raquo;</a></li>
+                        }
+                        else
+                        {
+                            <li><a href="#" data-page="up">&raquo;</a></li>
+                        }
+                    }
+                }
+            </ul>
+        </div>
     </div>
-}
-@using (Ajax.BeginForm("Save", "Home", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "ajaxGrid", OnFailure = "FailureSaveEditDialog", OnSuccess = "SuccessSaveEditDialog" }, new{role="editDialog"}))
-{
-    <div id="editBookDialogContent" class="container"></div>
-}
+</div>
+<div id="editBookDialogContent" class="container"></div>

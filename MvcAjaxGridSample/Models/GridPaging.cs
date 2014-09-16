@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents a block of data to control page information for a grid
     /// </summary>
-    public class GridPagingViewModel
+    public class GridPaging
     {
         /// <summary>
         ///     Total items in requested data
