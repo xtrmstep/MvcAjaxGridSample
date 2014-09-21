@@ -11,7 +11,7 @@ namespace MvcAjaxGridSample.Models.Tests
         {
             var model = new GridViewModel<BookViewModel>();
             var actual = Json.Encode(model.Options);
-            const string EXPECTED = "{\"Filter\":{\"Fields\":[{\"Name\":\"Title\",\"Value\":null},{\"Name\":\"IssueYear\",\"Value\":null}]},\"Sorting\":{\"Fields\":[{\"Name\":\"Title\",\"Ascending\":null},{\"Name\":\"IssueYear\",\"Ascending\":null}]},\"Paging\":{\"TotalItems\":0,\"TotalPages\":0,\"PageSize\":0,\"PageIndex\":0}}";
+            const string EXPECTED = "{\"Filter\":{\"Fields\":[{\"Name\":\"Title\",\"Value\":null},{\"Name\":\"IssueYear\",\"Value\":null}]},\"Sorting\":{\"Fields\":[{\"Name\":\"Title\",\"Ascending\":null},{\"Name\":\"IssueYear\",\"Ascending\":null}]},\"Paging\":{\"TotalItems\":0,\"TotalPages\":0,\"PageSize\":0,\"PageIndex\":1}}";
             Assert.AreEqual(EXPECTED, actual);
         }
     }
