@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Autofac;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvcAjaxGridSample.Models;
@@ -119,6 +120,20 @@ namespace MvcAjaxGridSample.Controllers.Tests
             Assert.AreEqual("Book 1", sortedData.Last().Title);
 
             _bookRep.Delete(book.Id);
+        }
+
+        [TestMethod]
+        public void GetData_should_return_correct_dataPage()
+        {
+            var model = new GridViewModel<BookViewModel>();
+            model.Options.Sorting.Set(new SortingField {Name = "Title", Ascending = true});
+            model.Options.Paging.PageIndex = 3;
+            Configuration.Grid.PageSize = 2; // set page size to 2 in order to have 3 pages. the latest one will have only one record
+
+            var pageData = _homeController.GetData(model.Options);
+
+            Assert.AreEqual(1, pageData.Length);
+            Assert.AreEqual("Book 5", pageData[0].Title);
         }
     }
 }

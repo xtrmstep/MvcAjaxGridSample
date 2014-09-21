@@ -252,15 +252,7 @@ namespace MvcAjaxGridSample.Controllers
             ModelCopier.CopyModel(book, bookViewModel);
             return PartialView("_EditBook", bookViewModel);
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult GoToPage(GridPaging model)
-        {
-
-            return new EmptyResult();
-        }
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Filter(BookEditViewModel filter)
