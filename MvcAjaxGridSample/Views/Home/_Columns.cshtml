@@ -1,0 +1,24 @@
+﻿@model MvcAjaxGridSample.Models.GridViewModel<MvcAjaxGridSample.Models.BookViewModel>
+@{
+    var sorting = Model.Options.Sorting;
+    var columns = Model.Columns;
+}
+<thead>
+    <tr>
+        <th class="col-sm-2"></th>
+        @for (var colIndex = 0; colIndex < columns.Length; colIndex++)
+        {
+            var sortingField = sorting.Fields[colIndex];
+
+            if (sortingField.Ascending.HasValue)
+            {
+                var ascending = sortingField.Ascending.Value ? "glyphicon-chevron-up" : "glyphicon-chevron-down";
+                <th><a href="#" data-column="@Model.Columns[colIndex]" data-sorting="@sortingField.Ascending.Value">@Model.Columns[colIndex]&nbsp;<span class="glyphicon @ascending"></span></a></th>
+            }
+            else
+            {
+                <th><a href="#" data-column="@Model.Columns[colIndex]">@Model.Columns[colIndex]</a></th>
+            }
+        }
+    </tr>
+</thead>

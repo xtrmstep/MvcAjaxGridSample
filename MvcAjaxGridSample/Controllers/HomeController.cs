@@ -38,24 +38,108 @@ namespace MvcAjaxGridSample.Controllers
 
         public ActionResult Index()
         {
-            var books = _bookRepository.Get();
-            var totalCount = books.Count();
-
-            var pageSize = Configuration.Grid.PageSize;
-            var model = new GridViewModel<BookViewModel>
-            {
-                Paging =
-                {
-                    PageSize = pageSize,
-                    PageIndex = 1,
-                    TotalItems = totalCount,
-                    TotalPages = totalCount / pageSize + 1
-                }
-            };
-
-            var data = books.Skip(pageSize * (model.Paging.PageIndex - 1)).Take(pageSize);
-            model.Data = data.Select(d => new BookViewModel(d)).ToArray();
+            var model = GetGridModel();
             return View(model);
+        }
+
+        private GridViewModel<BookViewModel> GetGridModel(GridViewModel<BookViewModel>.GridOptions options = null)
+        {
+            var model = new GridViewModel<BookViewModel>();
+            if (options != null) model.Options = options;
+            var data = GetData(model.Options);
+            model.Data = data;
+            return model;
+        }
+
+        /// <summary>
+        /// Returns data with respect to filetring and sorting, and update paging
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public BookViewModel[] GetData(GridViewModel<BookViewModel>.GridOptions options)
+        {
+            var books = _bookRepository.Get();
+
+            #region filtering
+
+            if (options.Filter != null)
+            {
+                foreach (var field in options.Filter.Fields)
+                {
+                    var name = field.Name;
+                    var value = field.Value;
+                    if (string.IsNullOrWhiteSpace(value)) continue;
+
+                    switch (name)
+                    {
+                        case "Title":
+                            books = books.Where(b => b.Title.Contains(value));
+                            break;
+                        case "IssueYear":
+                            books = books.Where(b => b.IssueYear.ToString().StartsWith(value));
+                            break;
+                    }
+                }
+            }
+            else
+                options.Filter = new GridFilter<BookViewModel>();
+            #endregion
+
+            #region sorting
+
+            if (options.Sorting != null)
+            {
+                IOrderedQueryable<Book> ordered = null;
+                foreach (var field in options.Sorting.Fields)
+                {
+                    var name = field.Name;
+                    var isAscending = field.Ascending;
+                    if (!isAscending.HasValue) continue;
+
+                    switch (name)
+                    {
+                        case "Title":
+                            if (isAscending.Value)
+                                ordered = ordered == null ? books.OrderBy(b => b.Title) : ordered.ThenBy(b => b.Title);
+                            else
+                                ordered = ordered == null ? books.OrderByDescending(b => b.Title) : ordered.ThenByDescending(b => b.Title);
+                            break;
+                        case "IssueYear":
+                            if (isAscending.Value)
+                                ordered = ordered == null ? books.OrderBy(b => b.IssueYear) : ordered.ThenBy(b => b.IssueYear);
+                            else
+                                ordered = ordered == null ? books.OrderByDescending(b => b.IssueYear) : ordered.ThenByDescending(b => b.IssueYear);
+                            break;
+                    }
+                }
+                if (ordered != null)
+                    books = ordered;
+            }
+            else
+                options.Sorting = new GridSorting<BookViewModel>();
+
+            #endregion
+
+            #region paging
+
+            if (options.Paging == null) options.Paging = new GridPaging();
+
+            var pageIndex = options.Paging.PageIndex; 
+            var pageSize = Configuration.Grid.PageSize;
+            var totalCount = books.Count();
+            var totalPages = totalCount / pageSize;
+            if (totalCount % pageSize > 0) totalPages++;
+            pageIndex = Math.Max(Math.Min(pageIndex, totalPages), 1);
+
+            options.Paging.TotalItems = totalCount;
+            options.Paging.TotalPages = totalPages;
+            options.Paging.PageIndex = pageIndex;
+            options.Paging.PageSize = pageSize;
+
+            books = books.Skip(pageSize * (pageIndex - 1)).Take(pageSize);
+            #endregion
+
+            return books.Select(d => new BookViewModel(d)).ToArray();
         }
 
         //[HttpPost]
@@ -182,6 +266,22 @@ namespace MvcAjaxGridSample.Controllers
         public ActionResult Filter(BookEditViewModel filter)
         {
             return new EmptyResult();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Sort(SortingField sorting, string options)
+        {
+            if (!sorting.Ascending.HasValue) 
+                sorting.Ascending = true;
+            else
+                sorting.Ascending = !sorting.Ascending;
+
+            var objOptions = System.Web.Helpers.Json.Decode<GridViewModel<BookViewModel>.GridOptions>(options);
+
+            objOptions.Sorting.Set(sorting);
+            var model = GetGridModel(objOptions);
+            return PartialView("_Grid", model);
         }
     }
 }

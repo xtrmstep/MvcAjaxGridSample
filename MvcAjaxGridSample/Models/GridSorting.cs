@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
+using WebGrease.Css.Extensions;
 
 namespace MvcAjaxGridSample.Models
 {
@@ -7,7 +8,7 @@ namespace MvcAjaxGridSample.Models
     {
         public GridSorting()
         {
-            Fields = typeof(T)
+            Fields = typeof (T)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.Name.ToUpper() != "ID")
                 .Select(p => new SortingField
@@ -19,15 +20,16 @@ namespace MvcAjaxGridSample.Models
 
         public SortingField[] Fields { get; set; }
 
-        public class SortingField
+        public void Set(SortingField sortingField)
         {
-            /// <summary>
-            /// Property name
-            /// </summary>
-            public string Name { get; set; }
+            var field = Fields.FirstOrDefault(f => f.Name == sortingField.Name);
+            if (field != null)
+                field.Ascending = sortingField.Ascending;
+        }
 
-            // True - accesding, False - descending, NUll - no sorting by the field
-            public bool? Acsending { get; set; }
+        public void Clear()
+        {
+            Fields.ForEach(f => f.Ascending = null);
         }
     }
 }

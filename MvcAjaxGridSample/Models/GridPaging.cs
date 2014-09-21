@@ -1,10 +1,14 @@
 ﻿namespace MvcAjaxGridSample.Models
 {
     /// <summary>
-    /// Represents a block of data to control page information for a grid
+    ///     Represents a block of data to control page information for a grid
     /// </summary>
     public class GridPaging
     {
+        public GridPaging()
+        {
+            PageIndex = 1;
+        }
         /// <summary>
         ///     Total items in requested data
         /// </summary>

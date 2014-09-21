@@ -1,0 +1,40 @@
+﻿@model MvcAjaxGridSample.Models.GridPaging
+
+<ul class="pagination">
+                
+    @for (var pageIndex = 1; pageIndex <= Model.TotalPages; pageIndex++)
+    {
+        if (pageIndex == 1)
+        {
+            if (Model.PageIndex == pageIndex)
+            {
+                <li class="disabled"><a href="#">&laquo;</a></li>
+            }
+            else
+            {
+                <li><a href="#" data-page="down">&laquo;</a></li>
+            }
+        }
+
+        if (Model.PageIndex == pageIndex)
+        {
+            <li class="active"><a href="#">@pageIndex <span class="sr-only">(current)</span></a></li>
+        }
+        else
+        {
+            <li><a href="#" data-page="@pageIndex">@pageIndex</a></li>
+        }
+
+        if (pageIndex == Model.TotalPages)
+        {
+            if (Model.PageIndex == pageIndex)
+            {
+                <li class="disabled"><a href="#">&raquo;</a></li>
+            }
+            else
+            {
+                <li><a href="#" data-page="up">&raquo;</a></li>
+            }
+        }
+    }
+</ul>

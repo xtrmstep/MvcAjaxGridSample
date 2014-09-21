@@ -138,11 +138,13 @@
     </Compile>
     <Compile Include="Models\BookEditViewModel.cs" />
     <Compile Include="Models\BookViewModel.cs" />
+    <Compile Include="Models\FilterField.cs" />
     <Compile Include="Models\GridCommand.cs" />
     <Compile Include="Models\GridFilter.cs" />
     <Compile Include="Models\GridPaging.cs" />
     <Compile Include="Models\GridSorting.cs" />
     <Compile Include="Models\GridViewModel.cs" />
+    <Compile Include="Models\SortingField.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeRegistrationModule.cs" />
     <Compile Include="Types\Configuration.cs" />
@@ -183,6 +185,11 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Home\_EditBook.cshtml" />
+    <Content Include="Views\Home\_Columns.cshtml" />
+    <Content Include="Views\Home\_Filter.cshtml" />
+    <Content Include="Views\Home\_Data.cshtml" />
+    <Content Include="Views\Home\_Paging.cshtml" />
+    <Content Include="Views\Home\_Grid.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

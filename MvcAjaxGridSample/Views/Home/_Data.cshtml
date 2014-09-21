@@ -1,0 +1,16 @@
+﻿@using Microsoft.Web.Mvc
+@model MvcAjaxGridSample.Models.BookViewModel[]
+
+<tbody data-role="body">
+    @foreach (var book in Model)
+    {
+        <tr data-id="@book.Id">
+            <td>
+                @Html.Button("Edit", "Edit", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn"})
+                @Html.Button("Delete", "Delete", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn"})
+            </td>
+            <td>@book.Title</td>
+            <td>@book.IssueYear</td>
+        </tr>
+    }
+</tbody>

@@ -11,7 +11,7 @@ namespace MvcAjaxGridSample.Models
     {
         public GridViewModel()
         {
-            Columns = typeof(T)
+            Columns = typeof (T)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .Where(p => p.Name.ToUpper() != "ID")
                 .Select(p => p.Name)
@@ -30,6 +30,7 @@ namespace MvcAjaxGridSample.Models
         public T[] Data { get; set; }
 
         public GridOptions Options { get; set; }
+
         public class GridOptions
         {
             public GridFilter<T> Filter { get; set; }

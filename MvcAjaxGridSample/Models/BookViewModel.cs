@@ -4,10 +4,8 @@ namespace MvcAjaxGridSample.Models
 {
     public class BookViewModel
     {
-        public BookViewModel()
-        {
-            
-        }
+        public BookViewModel() {}
+
         public BookViewModel(Book book)
         {
             Id = book.Id;
