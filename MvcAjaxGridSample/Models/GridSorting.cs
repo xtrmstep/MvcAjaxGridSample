@@ -22,6 +22,7 @@ namespace MvcAjaxGridSample.Models
 
         public void Set(SortingField sortingField)
         {
+            Clear();
             var field = Fields.FirstOrDefault(f => f.Name == sortingField.Name);
             if (field != null)
                 field.Ascending = sortingField.Ascending;
