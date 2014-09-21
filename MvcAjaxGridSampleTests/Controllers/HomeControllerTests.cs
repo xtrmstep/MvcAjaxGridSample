@@ -135,5 +135,18 @@ namespace MvcAjaxGridSample.Controllers.Tests
             Assert.AreEqual(1, pageData.Length);
             Assert.AreEqual("Book 5", pageData[0].Title);
         }
+
+        [TestMethod]
+        public void GetData_should_correctly_filter_data()
+        {
+            var model = new GridViewModel<BookViewModel>();
+            model.Options.Sorting.Set(new SortingField { Name = "Title", Ascending = true });
+            model.Options.Filter.Fields[0].Value = "5"; // filter by Title contaning '5'
+
+            var pageData = _homeController.GetData(model.Options);
+
+            Assert.AreEqual(1, pageData.Length);
+            Assert.AreEqual("Book 5", pageData[0].Title);
+        }
     }
 }
