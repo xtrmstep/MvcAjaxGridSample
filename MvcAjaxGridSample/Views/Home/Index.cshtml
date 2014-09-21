@@ -5,7 +5,8 @@
         $(document).ready(function() {
             $("#ajaxGrid").ajaxGrid({
                 url: {
-                    sort: '@Url.Action("Sort", "Home")'
+                    sort: '@Url.Action("Sort", "Home")',
+                    page: '@Url.Action("Page", "Home")'
                 }
             });
         });

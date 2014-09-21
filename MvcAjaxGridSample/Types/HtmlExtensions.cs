@@ -26,13 +26,24 @@ namespace MvcAjaxGridSample.Types
             return new MvcHtmlString(btn.ToString());
         }
 
-        public static IHtmlString SimpleHidden<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> nameProperty, object value)
+        public static IHtmlString SimpleHidden<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> nameProperty, object value, IDictionary<string, object> htmlAttributes = null)
         {
             var inp = new TagBuilder("input");
             inp.Attributes["type"] = "hidden";
             inp.Attributes["name"] = html.NameFor(nameProperty).ToString();
             inp.Attributes["value"] = Convert.ToString(value);
-            return new MvcHtmlString(inp.ToString());
+            if (htmlAttributes != null) inp.MergeAttributes(htmlAttributes, true);
+            return new MvcHtmlString(inp.ToString(TagRenderMode.SelfClosing));
+        }
+
+        public static IHtmlString SimpleHidden<TModel>(this HtmlHelper<TModel> html, string name, object value, IDictionary<string, object> htmlAttributes = null)
+        {
+            var inp = new TagBuilder("input");
+            inp.Attributes["type"] = "hidden";
+            inp.Attributes["name"] = name;
+            inp.Attributes["value"] = Convert.ToString(value);
+            if (htmlAttributes != null) inp.MergeAttributes(htmlAttributes, true);
+            return new MvcHtmlString(inp.ToString(TagRenderMode.SelfClosing));
         }
 
         public static IHtmlString SimpleEdit<TModel, TValue>(this HtmlHelper<TModel> html, Expression<Func<TModel, TValue>> nameProperty, object value, IDictionary<string, object> htmlAttributes = null)

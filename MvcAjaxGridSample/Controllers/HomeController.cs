@@ -283,5 +283,34 @@ namespace MvcAjaxGridSample.Controllers
             var model = GetGridModel(objOptions);
             return PartialView("_Grid", model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Page(string index, string options)
+        {
+            var objOptions = System.Web.Helpers.Json.Decode<GridViewModel<BookViewModel>.GridOptions>(options);
+            // use index if specified, if not - do nothing
+            // if index = up|down, then calculate the index
+            // if index = number, then use it
+            if (!string.IsNullOrWhiteSpace(index))
+            {
+                if (index == "up")
+                {
+                    objOptions.Paging.PageIndex += 1;
+                }else if (index == "down")
+                {
+                    objOptions.Paging.PageIndex -= 1;
+                }
+                else
+                {
+                    int intIndex;
+                    if (int.TryParse(index, out intIndex))
+                        objOptions.Paging.PageIndex = intIndex;
+                }
+            }
+
+            var model = GetGridModel(objOptions);
+            return PartialView("_Grid", model);
+        }
     }
 }

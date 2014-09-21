@@ -1,8 +1,8 @@
 ﻿@using Microsoft.Web.Mvc
+@using MvcAjaxGridSample.Types
 @model MvcAjaxGridSample.Models.GridViewModel<MvcAjaxGridSample.Models.BookViewModel>
 
-
-@Html.Hidden("options", Json.Encode(Model.Options), new {data_role = "options"})
+@Html.SimpleHidden("options", Json.Encode(Model.Options), new Dictionary<string, object>{ {"data-role", "options"}})
 <table class="table table-hover">
     @Html.Partial("_Columns", Model)
     @Html.Partial("_Filter", Model.Options.Filter)

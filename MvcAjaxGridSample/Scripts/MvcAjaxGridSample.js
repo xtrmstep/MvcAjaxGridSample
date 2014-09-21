@@ -3,31 +3,29 @@
         var settings = $.extend({
             // defaults
             url: {
-                sort: ""
+                sort: "",
+                page: ""
             },
             selectors: {
                 columnsSelector: "[data-column]",
+                pagingSelector: "[data-page]",
                 optionsSelector: "[data-role='options']",
                 filterSelector: "[data-role='filter']",
-                pagingSelector: "[data-role='paging']",
                 bodySelector: "[data-role='body']",
                 dialogSelector: "[data-role='dialog']"
             }
         }, options);
         var $this = $(this);
-        var gridOptions = $this.find(settings.selectors.optionsSelector).val();
-        settings.options = gridOptions;
 
         return this.each(function() {
             var $filter = $this.find(settings.selectors.filterSelector);
-            var $paging = $this.find(settings.selectors.pagingSelector);
             var $gridBody = $this.find(settings.selectors.bodySelector);
             var $dialog = $this.find(settings.selectors.dialogSelector);
 
             initSorting();
+            initPaging();
             initFilter($filter);
             initRecordControls($gridBody);
-            initPaging($paging);
             initDialog($dialog);
         });
 
@@ -36,9 +34,10 @@
                 var $column = $(this);
                 var columnName = $column.data("column");
                 var sortAscending = $column.data("sorting");
+                var gridOptions = $this.find(settings.selectors.optionsSelector).val();
                 var dto = $.postify({
                     sorting: { name: columnName, ascending: sortAscending },
-                    options: settings.options
+                    options: gridOptions
                 });
                 $.post(settings.url.sort, dto)
                     .success(function(xhr, status, err) {
@@ -50,8 +49,6 @@
                         else
                             alert("Error is occurred.");
                     });
-
-                //return false;
             });
         }
 
@@ -59,8 +56,26 @@
             
         }
 
-        function initPaging($paging) {
-            
+        function initPaging() {
+            $this.on("click", settings.selectors.pagingSelector, function () {
+                var $pageButton = $(this);
+                var pageIndex = $pageButton.data("page");
+                var gridOptions = $this.find(settings.selectors.optionsSelector).val();
+                var dto = $.postify({
+                    index: pageIndex,
+                    options: gridOptions
+                });
+                $.post(settings.url.page, dto)
+                    .success(function (xhr, status, err) {
+                        $this.html(xhr);
+                    })
+                    .error(function (xhr, status, err) {
+                        if (xhr.responseText)
+                            alert(xhr.responseText);
+                        else
+                            alert("Error is occurred.");
+                    });
+            });
         }
 
         function initRecordControls($gridBody) {
