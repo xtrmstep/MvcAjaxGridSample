@@ -53,7 +53,7 @@ namespace MvcAjaxGridSample.Types
             inp.Attributes["name"] = html.NameFor(nameProperty).ToString();
             inp.Attributes["value"] = Convert.ToString(value);
             if (htmlAttributes != null) inp.MergeAttributes(htmlAttributes, true);
-            return new MvcHtmlString(inp.ToString());
+            return new MvcHtmlString(inp.ToString(TagRenderMode.SelfClosing));
         }
     }
 }

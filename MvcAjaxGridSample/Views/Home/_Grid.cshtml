@@ -10,7 +10,7 @@
 </table>
 <div>
     <div class="pull-left">
-        @Html.Button("New", "New", HtmlButtonType.Button, null, new {@class = "btn-primary btn-xs btn"})
+        @Html.Button("New", "New", HtmlButtonType.Button, null, new {@class = "btn-primary btn-xs btn", data_role = "recordEdit"})
     </div>
     <div class="pull-right">
         @Html.Partial("_Paging", Model.Options.Paging)

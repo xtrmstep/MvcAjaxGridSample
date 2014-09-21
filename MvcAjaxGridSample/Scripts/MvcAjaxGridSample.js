@@ -5,7 +5,10 @@
             url: {
                 sort: "",
                 page: "",
-                filter: ""
+                filter: "",
+                edit: "",
+                delete: "",
+                save: ""
             },
             selectors: {
                 columnsSelector: "[data-column]",
@@ -17,22 +20,21 @@
                 filterInputsSelector: "[data-filter]",
 
                 optionsSelector: "[data-role='options']",
-                bodySelector: "[data-role='body']",
-                dialogSelector: "[data-role='dialog']"
+
+                recordEditSelector: "[data-role='recordEdit']",
+                recordDeleteSelector: "[data-role='recordDelete']",
+
+                dialogContainerSelector: "[data-role='editDialog']",
+                dialogSaveSelector: "[data-role='editSave']"
             }
         }, options);
         var $this = $(this);
 
         return this.each(function() {
-            
-            var $gridBody = $this.find(settings.selectors.bodySelector);
-            var $dialog = $this.find(settings.selectors.dialogSelector);
-
             initSorting();
             initPaging();
             initFilter();
-            initRecordControls($gridBody);
-            initDialog($dialog);
+            initRecordActions();
         });
 
         function initSorting() {
@@ -126,62 +128,107 @@
             });
         }
 
-        function initRecordControls($gridBody) {
-            
+        function initRecordActions() {
+            // delete items
+            $this.on("click", settings.selectors.recordDeleteSelector, function() {
+                if (confirm("Are you sure?")) {
+                    var recordId = $(this).data("id");
+                    var gridOptions = $this.find(settings.selectors.optionsSelector).val();
+                    var dto = $.postify({
+                        id: recordId,
+                        options: gridOptions
+                    });
+                    $.post(settings.url.delete, dto)
+                        .success(function(xhr, status, err) {
+                            $this.html(xhr);
+                        })
+                        .error(function(xhr, status, err) {
+                            if (xhr.responseText)
+                                alert(xhr.responseText);
+                            else
+                                alert("Error is occurred.");
+                        });
+                }
+            });
+            // edit items
+            $this.on("click", settings.selectors.recordEditSelector, function() {
+                var recordId = $(this).data("id");
+                var dto = $.postify({
+                    id: recordId
+                });
+                $.post(settings.url.edit, dto)
+                    .success(function (xhr, status, err) {
+                        var $dialogContainer = $(settings.selectors.dialogContainerSelector);
+                        $dialogContainer.html(xhr);
+                        var $dialog = $dialogContainer.find("#dialog");
+                        $dialog.modal();
+                    })
+                    .error(function(xhr, status, err) {
+                        if (xhr.responseText)
+                            alert(xhr.responseText);
+                        else
+                            alert("Error is occurred.");
+                    });
+            });
+
+            $(document).on("click", settings.selectors.dialogSaveSelector, function () {
+                var $dialogContainer = $(settings.selectors.dialogContainerSelector);
+                var dialogData = getPostData($dialogContainer);
+                var gridOptions = $this.find(settings.selectors.optionsSelector).val();
+
+                var dto = $.postify({
+                    bookEditViewModel: dialogData,
+                    options: gridOptions
+                });
+                $.post(settings.url.save, dto)
+                    .success(function (xhr, status, err) {
+                        var $dialog = $dialogContainer.find("#dialog");
+                        $this.html(xhr);
+                        $dialog.modal('hide');
+                    })
+                    .error(function (xhr, status, err) {
+                        if (status == "error")
+                        {
+                            if (xhr.responseJSON) {
+                                $(".form-group").removeClass('has-error');
+                                $(".form-group input").tooltip('destroy');
+                                for (var i = 0; i < xhr.responseJSON.length; i++) {
+                                    var name = xhr.responseJSON[i].Field.replace("bookEditViewModel.", "");
+                                    var errorMessage = xhr.responseJSON[i].ErrorMessage;
+                                    var selectorGroup = "[data-role='editor-" + name + "']";
+                                    $(selectorGroup).addClass('has-error');
+                                    var selectorEditor = "input[name='" + name + "']";
+                                    $(selectorEditor)
+                                        .attr("data-toggle", "tooltip")
+                                        .attr("data-placement", "top")
+                                        .attr("title", errorMessage);
+                                    $(selectorEditor).tooltip();
+                                }
+                            } else
+                                if (xhr.responseText) {
+                                alert(xhr.responseText);
+                            }
+                        }
+                    });
+            });
         }
 
-        function initDialog() {
-            
+        function getPostData($element) {
+            var data = {};
+            if ($element) {
+                var $inputs = $element.find("input");
+                $inputs.each(function() {
+                    var name = this.name;
+                    var val = this.value;
+                    if (name && val)
+                        data[name] = val;
+                });
+            }
+            return data;
         }
     };
 }(jQuery));
 
-
-//$("[data-page]").click(function() {
-//    var gridOptions = $("#gridOptions").val();
-//    var data = { options: gridOptions };
-//    if (data.pageIndex == "up" || data.pageIndex == "down") {
-//        var currentPageIndex = $("[data-role='pageIndex']").val();
-//        currentPageIndex = currentPageIndex + (data.pageIndex == "up" ? 1 : -1);
-//        data.pageIndex = currentPageIndex;
-//    }
-//    $.post("@Url.Action("GoToPage", "Home")", data)
-//        .success(function(xhr, status, err) {
-//            $("[data-role='data']").html("");
-//        });
-
-//});
-
-//function ShowEditDialog() {
-//    $('#editBookDialog').modal();
-//}
-//function SuccessSaveEditDialog(data, status, xhr) {
-//    $('#editBookDialog').modal('hide');
-//}
-//function FailureSaveEditDialog(xhr, status, err) {
-//    if (status == "error")
-//    {
-//        if (xhr.responseJSON) {
-//            $(".form-group").removeClass('has-error');
-//            $(".form-group input").tooltip('destroy');
-//            for (var i = 0; i < xhr.responseJSON.length; i++) {
-//                var name = xhr.responseJSON[i].Field;
-//                var errorMessage = xhr.responseJSON[i].ErrorMessage;
-//                var selectorGroup = "[role='editor-" + name + "']";
-//                $(selectorGroup).addClass('has-error');
-//                var selectorEditor = "input[name='" + name + "']";
-//                $(selectorEditor)
-//                    .attr("data-toggle", "tooltip")
-//                    .attr("data-placement", "top")
-//                    .attr("title", errorMessage);
-//                $(selectorEditor).tooltip();
-//            }
-//        } else
-//            if (xhr.responseText) {
-//            alert(xhr.responseText);
-//        }
-//    }
-//}
 function GetAntiForgeryToken() {
     var tokenField = $("input[type='hidden'][name$='RequestVerificationToken']");
     if (tokenField.length == 0) {

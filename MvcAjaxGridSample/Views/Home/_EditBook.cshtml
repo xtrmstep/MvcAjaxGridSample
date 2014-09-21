@@ -1,7 +1,7 @@
 ﻿@using MvcAjaxGridSample.Types
 @model MvcAjaxGridSample.Models.BookEditViewModel
 
-<div id="editBookDialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="dialog" class="modal fade" tabindex="-1" data-role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -10,18 +10,18 @@
             </div>
             <div class="modal-body">
                 @Html.HiddenFor(m => m.Id)
-                <div class="form-group" role="editor-@Html.NameFor(m => m.Title)">
+                <div class="form-group" data-role="editor-@Html.NameFor(m => m.Title)">
                     @Html.LabelFor(m => m.Title, new {@class = "control-label"})
                     @Html.SimpleEdit(m => m.Title, Model.Title, new Dictionary<string, object> {{"class", "form-control"}})
                 </div>
-                <div class="form-group" role="editor-@Html.NameFor(m => m.IssueYear)">
+                <div class="form-group" data-role="editor-@Html.NameFor(m => m.IssueYear)">
                     @Html.LabelFor(m => m.IssueYear, new {@class = "control-label"})
                     @Html.SimpleEdit(m => m.IssueYear, Model.IssueYear, new Dictionary<string, object> {{"class", "form-control"}})
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary" data-role="editSave">Save changes</button>
             </div>
         </div>
     </div>

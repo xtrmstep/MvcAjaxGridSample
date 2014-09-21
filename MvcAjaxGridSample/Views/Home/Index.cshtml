@@ -7,7 +7,10 @@
                 url: {
                     sort: '@Url.Action("Sort", "Home")',
                     page: '@Url.Action("Page", "Home")',
-                    filter: '@Url.Action("Filter", "Home")'
+                    filter: '@Url.Action("Filter", "Home")',
+                    edit: '@Url.Action("Edit", "Home")',
+                    delete: '@Url.Action("Delete", "Home")',
+                    save: '@Url.Action("Save", "Home")'
                 }
             });
         });
@@ -16,6 +19,4 @@
 <div id="ajaxGrid" class="container">
     @Html.Partial("_Grid", Model)
 </div>
-<div id="editBookDialogContent" class="container">
-    
-</div>
+<div data-role="editDialog" class="container"></div>

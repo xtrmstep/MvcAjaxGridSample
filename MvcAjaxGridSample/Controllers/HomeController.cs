@@ -143,72 +143,11 @@ namespace MvcAjaxGridSample.Controllers
             return books.Select(d => new BookViewModel(d)).ToArray();
         }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult CommandDispatcher(GridViewModel<Book> model, string gridOptions)
-        //{
-        //    if (model.DeletedId.HasValue)
-        //        _bookRepository.Delete(model.DeletedId.Value);
-
-        //    var options = (GridViewModel<Book>.GridOptions) new MvcSerializer().Deserialize(gridOptions, SerializationMode.Signed);
-        //    options.Command = model.Options.Command;
-        //    var books = _bookRepository.Get();
-
-        //    // filtering if command = filter or clear
-        //    if (options.Command == GridCommand.Filter || options.Command == GridCommand.FilterClear)
-        //    {
-        //        switch (options.Command)
-        //        {
-        //            case GridCommand.Filter:
-        //                options.Filter.Title = model.Options.Filter.Title;
-        //                options.Filter.IssueYear = model.Options.Filter.IssueYear;
-        //                break;
-        //            case GridCommand.FilterClear:
-        //                options.Filter.Title = null;
-        //                options.Filter.IssueYear = null;
-        //                break;
-        //        }
-        //        options.Paging.PageIndex = 1;
-        //    }
-
-        //    if (string.IsNullOrWhiteSpace(options.Filter.Title) == false)
-        //        books = books.Where(b => b.Title.Contains(options.Filter.Title));
-        //    if (options.Filter.IssueYear.HasValue)
-        //        books = books.Where(b => b.IssueYear == options.Filter.IssueYear.Value);
-
-        //    // update paging
-
-        //    var totalCount = books.Count();
-        //    options.Paging.TotalItems = totalCount;
-        //    options.Paging.TotalPages = totalCount/options.Paging.PageSize;
-        //    if (totalCount%options.Paging.PageSize > 0) options.Paging.TotalPages++;
-
-        //    // changing a page
-        //    switch (options.Command)
-        //    {
-        //        case GridCommand.PageLeft:
-        //            options.Paging.PageIndex = Math.Max(options.Paging.PageIndex - 1, 1);
-        //            break;
-        //        case GridCommand.PageRight:
-        //            options.Paging.PageIndex = Math.Min(options.Paging.PageIndex + 1, options.Paging.TotalPages);
-        //            break;
-        //        case GridCommand.GoTo:
-        //            options.Paging.PageIndex = Math.Max(Math.Min(model.Options.Paging.PageIndex, options.Paging.TotalPages), 1);
-        //            break;
-        //    }
-
-        //    var data = books.Skip(Configuration.Grid.PageSize*(options.Paging.PageIndex - 1)).Take(Configuration.Grid.PageSize);
-
-        //    model.Data = data.ToArray();
-        //    model.Options = options;
-        //    return PartialView("_GridViewBooks", model);
-        //}
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int? id)
         {
-            var book = _bookRepository.Get(id);
+            var book = id.HasValue ? _bookRepository.Get(id.Value) : new Book();
             var bookViewModel = new BookEditViewModel();
             ModelCopier.CopyModel(book, bookViewModel);
             return PartialView("_EditBook", bookViewModel);
@@ -216,42 +155,20 @@ namespace MvcAjaxGridSample.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Save(BookEditViewModel bookViewModel)
+        public ActionResult Save(BookEditViewModel bookEditViewModel, string options)
         {
-            //if (ModelState.IsValid)
-            //{
-            //    var book = new Book();
-            //    ModelCopier.CopyModel(bookViewModel, book);
-            //    _bookRepository.Save(book);
+            if (ModelState.IsValid)
+            {
+                var objOptions = System.Web.Helpers.Json.Decode<GridViewModel<BookViewModel>.GridOptions>(options);
 
-            //    var gridOptions = new GridViewModel<Book>.GridOptions
-            //    {
-            //        Filter =
-            //        {
-            //            Title = book.Title,
-            //            IssueYear = book.IssueYear
-            //        },
-            //        Paging =
-            //        {
-            //            PageIndex = 1,
-            //            PageSize = Configuration.Grid.PageSize
-            //        }
-            //    };
-            //    var options = new MvcSerializer().Serialize(gridOptions, SerializationMode.Signed);
-            //    var model = new GridViewModel<Book> {Options = {Command = GridCommand.Filter}};
-            //    return CommandDispatcher(model, options);
-            //}
+                var book = new Book();
+                ModelCopier.CopyModel(bookEditViewModel, book);
+                _bookRepository.Save(book);
+
+                var model = GetGridModel(objOptions);
+                return PartialView("_Grid", model);
+            }
             return new ModelValidationActionResult(ModelState);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult New()
-        {
-            var book = new Book();
-            var bookViewModel = new BookEditViewModel();
-            ModelCopier.CopyModel(book, bookViewModel);
-            return PartialView("_EditBook", bookViewModel);
         }
         
         [HttpPost]
@@ -318,6 +235,16 @@ namespace MvcAjaxGridSample.Controllers
                 }
             }
 
+            var model = GetGridModel(objOptions);
+            return PartialView("_Grid", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, string options)
+        {
+            _bookRepository.Delete(id);
+            var objOptions = System.Web.Helpers.Json.Decode<GridViewModel<BookViewModel>.GridOptions>(options);
             var model = GetGridModel(objOptions);
             return PartialView("_Grid", model);
         }
