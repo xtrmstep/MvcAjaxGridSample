@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
+using WebGrease.Css.Extensions;
 
 namespace MvcAjaxGridSample.Models
 {
@@ -19,5 +20,10 @@ namespace MvcAjaxGridSample.Models
         }
 
         public FilterField[] Fields { get; set; }
+
+        public void Clear()
+        {
+            Fields.ForEach(f => f.Value = null);
+        }
     }
 }

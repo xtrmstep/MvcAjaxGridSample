@@ -6,7 +6,8 @@
             $("#ajaxGrid").ajaxGrid({
                 url: {
                     sort: '@Url.Action("Sort", "Home")',
-                    page: '@Url.Action("Page", "Home")'
+                    page: '@Url.Action("Page", "Home")',
+                    filter: '@Url.Action("Filter", "Home")'
                 }
             });
         });

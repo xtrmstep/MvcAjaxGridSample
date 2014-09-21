@@ -7,6 +7,7 @@ using MvcAjaxGridSample.Models;
 using MvcAjaxGridSample.Types;
 using MvcAjaxGridSample.Types.DataModel;
 using MvcAjaxGridSample.Types.DataStorage;
+using WebGrease.Css.Extensions;
 
 namespace MvcAjaxGridSample.Controllers
 {
@@ -255,9 +256,25 @@ namespace MvcAjaxGridSample.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Filter(BookEditViewModel filter)
+        public ActionResult Filter(FilterField[] filter, string options)
         {
-            return new EmptyResult();
+            var objOptions = System.Web.Helpers.Json.Decode<GridViewModel<BookViewModel>.GridOptions>(options);
+            // if filter Name is Empty, then clean the filter
+            // if not empty, then filter
+            if (filter != null && filter.Any(f => !string.IsNullOrWhiteSpace(f.Name)))
+            {
+                objOptions.Filter.Fields.ForEach(field => {
+                    var filterField = filter.FirstOrDefault(userField => userField.Name == field.Name);
+                    if (filterField != null)
+                        field.Value = filterField.Value;
+                });
+            }
+            else
+            {
+                objOptions.Filter.Clear();
+            }
+            var model = GetGridModel(objOptions);
+            return PartialView("_Grid", model);
         }
 
         [HttpPost]

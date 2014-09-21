@@ -3,11 +3,15 @@
 
 <tr>
     <td class="col-sm-2">
-        @Html.Button("Apply", "Apply", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn"})
-        @Html.Button("Clear", "Clear", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn"})
+        @Html.Button("Apply", "Apply", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn", data_role = "filterApply"})
+        @Html.Button("Clear", "Clear", HtmlButtonType.Button, null, new {@class = "btn-default btn-xs btn", data_role = "filterClear"})
     </td>
     @foreach (var filter in Model.Fields)
     {
-        <td>@Html.TextBox(filter.Name, filter.Value, new {data_role="filter"})</td>
+        <td>@Html.TextBox(filter.Name, filter.Value, new
+            {
+                data_filter = filter.Name
+            })
+        </td>
     }
 </tr>

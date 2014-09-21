@@ -4,13 +4,19 @@
             // defaults
             url: {
                 sort: "",
-                page: ""
+                page: "",
+                filter: ""
             },
             selectors: {
                 columnsSelector: "[data-column]",
+
                 pagingSelector: "[data-page]",
+
+                filterApplySelector: "[data-role='filterApply']",
+                filterClearSelector: "[data-role='filterClear']",
+                filterInputsSelector: "[data-filter]",
+
                 optionsSelector: "[data-role='options']",
-                filterSelector: "[data-role='filter']",
                 bodySelector: "[data-role='body']",
                 dialogSelector: "[data-role='dialog']"
             }
@@ -18,13 +24,13 @@
         var $this = $(this);
 
         return this.each(function() {
-            var $filter = $this.find(settings.selectors.filterSelector);
+            
             var $gridBody = $this.find(settings.selectors.bodySelector);
             var $dialog = $this.find(settings.selectors.dialogSelector);
 
             initSorting();
             initPaging();
-            initFilter($filter);
+            initFilter();
             initRecordControls($gridBody);
             initDialog($dialog);
         });
@@ -52,8 +58,50 @@
             });
         }
 
-        function initFilter($filter) {
-            
+        function initFilter() {
+            // apply filter
+            $this.on("click", settings.selectors.filterApplySelector, function () {
+                var $filters = $this.find(settings.selectors.filterInputsSelector);
+                var filterArray = new Array();
+                $filters.each(function() {
+                    var filterInput = $(this);
+                    var fieldName = filterInput.data("filter");
+                    var fieldValue = filterInput.val();
+                    filterArray.push({ name: fieldName, value: fieldValue });
+                });
+                var gridOptions = $this.find(settings.selectors.optionsSelector).val();
+                var dto = $.postify({
+                    filter: filterArray,
+                    options: gridOptions
+                });
+                $.post(settings.url.filter, dto)
+                    .success(function (xhr, status, err) {
+                        $this.html(xhr);
+                    })
+                    .error(function (xhr, status, err) {
+                        if (xhr.responseText)
+                            alert(xhr.responseText);
+                        else
+                            alert("Error is occurred.");
+                    });
+            });
+            // clear filter
+            $this.on("click", settings.selectors.filterClearSelector, function () {
+                var gridOptions = $this.find(settings.selectors.optionsSelector).val();
+                var dto = $.postify({
+                    options: gridOptions
+                });
+                $.post(settings.url.filter, dto)
+                    .success(function (xhr, status, err) {
+                        $this.html(xhr);
+                    })
+                    .error(function (xhr, status, err) {
+                        if (xhr.responseText)
+                            alert(xhr.responseText);
+                        else
+                            alert("Error is occurred.");
+                    });
+            });
         }
 
         function initPaging() {
