@@ -1,7 +1,5 @@
 MvcAjaxGridSample
 =================
-Test URL: http://twreporter.apphb.com/
-
 Ajax grid sample built with MVC AjaxHelper. It's not a component. It's just an example of the design approach with minimum custom JS code.
 
 Important
